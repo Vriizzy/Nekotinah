@@ -1,0 +1,26 @@
+{
+  "name": "pasta-bot2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node .",
+    "nodemon": "nodemon"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.7.1",
+    "fetch-api": "^0.0.2",
+    "gcommands": "^10.0.0",
+    "generate-password": "^1.7.0",
+    "moment": "^2.29.4",
+    "mongoose": "^6.8.1",
+    "ms": "^2.1.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
