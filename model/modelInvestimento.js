@@ -4,6 +4,7 @@ module.exports = model(
     'Investimentos',
     new Schema({
         UserID: String,
-        DinheiroInv: {type: Number, default: 0}
+        DinheiroInv: {type: Number, default: 0},
+        Empresa: String
     })
 )

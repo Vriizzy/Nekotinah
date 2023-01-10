@@ -1,4 +1,5 @@
-const { CommandType, ArgumentType, Command, Argument } = require('gcommands')
+const { CommandType, ArgumentType, Command, Argument} = require('gcommands')
+const OwnerOnlyInhbitor = require('../inhibitors/ownerOnly.js')
 const { EmbedBuilder } = require('discord.js')
 const schema = require('../model/model.js')
 

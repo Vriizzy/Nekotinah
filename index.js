@@ -1,9 +1,7 @@
 require('dotenv').config()
 const { GClient, Plugins, Command, Component } = require('gcommands')
-const { GatewayIntentBits, Events } = require('discord.js')
-const obj = require('./economia/emprestimo')
+const { GatewayIntentBits, Events, InteractionCollector } = require('discord.js')
 const { join } = require('path')
-const schema = require('./model/model')
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
 Command.setDefaults({
@@ -25,27 +23,33 @@ const client = new GClient({
         join(__dirname, 'components'),
         join(__dirname, 'model'),
         join(__dirname, 'economia'),
+        join(__dirname, 'ticket'),
     ],
     messagePrefix: '!',
     messageSupport: true | true,
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers],
 })
 
 mongoose.connect(process.env.MONGODB)
 mongoose.connection.on('connected', () => {
     console.log('connected')
 })
+client.on('guildMemberAdd', (member) => {
+    member.send('')
+})
 
-client.on(Events.InteractionCreate, async (interaction) => {
-    if (interaction.isButton()) {
-        if (interaction.customId === 'aceito') {
-            const data = await schema.findOne({ UserID: interaction.user.id })
-            if (!data) {
-                return interaction.reply('Você não está registrado!')
+client.on('interactionCreate', (i) => {
+   console.log(i.isButton, i.isButton())
+
+        if (i.customId === 'abrir') {
+            let verificaçao = i.guild.channels.cache.find((ticket) => ticket.name === i.user.id)
+            if (verificaçao) {
+                return i.reply(`Eita! Você já possui um ticket em instancia!\nEle está aberto bem aqui ${verificaçao}`)
             } else {
-                interaction.user.send(`${interaction.user}, o usuário aceitou a solicitação de emprestimo!`)
+                i.guild.channels.create(verificaçao)
             }
         }
-    }
-})
+    })
+
+    
 client.login(process.env.DISCORD_TOKEN)
