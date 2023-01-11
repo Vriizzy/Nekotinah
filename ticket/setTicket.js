@@ -1,28 +1,16 @@
-const {
-    Command,
-    CommandType,
-    Argument,
-    ArgumentType,
-    Inhibitor: { MemberRoles },
-} = require('gcommands')
+const { Command, CommandType, Argument, ArgumentType } = require('gcommands')
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
-
+const OwnerOnlyExecute = require('../inhibitors/ownerOnly')
 new Command({
     name: 'set-ticket',
     description: 'sete um ticket',
     type: [CommandType.SLASH],
-    // Inhibitor: [
-    //     new MemberRoles({
-    //         ids: ['1062419286297161919'],
-    //         message:'Você não tem permissão para utilizar esse comando',
-    //         ephemeral: true
-    //     }),
-    // ],
+    inhibitors: [ 
+        new OwnerOnlyExecute()
+    ],
     run: (ctx) => {
         const embed = new EmbedBuilder().setTitle('Sistema de ticket!').setDescription('Aperte o botão abaixo para poder abrir um ticket.')
-        const row = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('abrir').setLabel('suporte!').setStyle(ButtonStyle.Primary)
-        )
-        return ctx.reply({ embeds: [embed], components: [row]})
+        const row = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('abrir').setLabel('suporte!').setStyle(ButtonStyle.Primary))
+        return ctx.reply({ embeds: [embed], components: [row] })
     },
 })
