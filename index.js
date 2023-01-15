@@ -12,7 +12,9 @@ const {
 } = require('discord.js')
 const { join } = require('path')
 const mongoose = require('mongoose')
-const schema = require('./model/modelTicket')
+const ticket = require('./model/modelTicket')
+const schema = require('./model/modelLike')
+const register = require('./model/model')
 mongoose.Promise = global.Promise
 Command.setDefaults({
     cooldown: '5s',
@@ -34,6 +36,7 @@ const client = new GClient({
         join(__dirname, 'model'),
         join(__dirname, 'economia'),
         join(__dirname, 'ticket'),
+        join(__dirname, 'rpg'),
     ],
     messagePrefix: '!',
     messageSupport: true | true,
@@ -45,7 +48,7 @@ mongoose.connection.on('connected', () => {
     console.log('connected')
 })
 client.on('guildMemberAdd', (member) => {
-    member.send('')
+    member.send('123')
 })
 
 client.on('interactionCreate', async (interaction) => {
@@ -56,11 +59,11 @@ client.on('interactionCreate', async (interaction) => {
         if (interaction.customId === 'abrir') {
             const nome_do_canal = `🌀 -${interaction.user.username}`
             const canal = interaction.guild.channels.cache.find((c) => c.name == nome_do_canal)
-            const data = await schema.findOne({ UserID: interaction.user.id })
+            const data = await ticket.findOne({ UserID: interaction.user.id })
             if (data) {
                 return interaction.reply({ content: `Parece que você já tem um ticket aberto!` })
             } else {
-                schema.create({ UserID: interaction.user.id, TicketName: nome_do_canal }, (error, data) => {})
+                ticket.create({ UserID: interaction.user.id, TicketName: nome_do_canal }, (error, data) => {})
                 let categoria = interaction.channel.parent
                 if (!categoria) return null
                 interaction.guild.channels
@@ -95,12 +98,13 @@ client.on('interactionCreate', async (interaction) => {
             interaction.reply('fechando ticket em 5 segundos...')
             setTimeout(() => {
                 deleteChannel()
-                schema.findOneAndDelete({ UserID: interaction.user.id }, (err) =>{
-                    if(err) throw err;
+                ticket.findOneAndDelete({ UserID: interaction.user.id }, (err) => {
+                    if (err) throw err
                 })
             }, 5000)
         }
     }
 })
+
 
 client.login(process.env.DISCORD_TOKEN)
