@@ -8,8 +8,8 @@ module.exports = model(
     IdRegister: String,
     Bio: String,
     Banner: String, 
-    Like: {default: 0, type: Array},
+    Like: {type:Number, default:0},
+    PessoaQueCurtiu: {default: 'None', type:Array},
     Dinheiro: {default: 0, type: Number},
-    ClasseRpg: String
   })
 )

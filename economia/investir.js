@@ -83,7 +83,8 @@ new Command({
                             )
                             .setColor('Random')
                             .setThumbnail('https://imgur.com/4xvUeHk.png')
-                        data.DinheiroInv = valorinv
+                        data.DinheiroInv = data.DinheiroInv - valorinv
+                        data.Dinheiro = (data.Dinheiro - valorinv)
                         data.save()
                         ctx.reply({ embeds: [embed2] })
                     } else {

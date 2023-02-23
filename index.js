@@ -9,11 +9,15 @@ const {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle,
 } = require('discord.js')
+
+
 const { join } = require('path')
 const mongoose = require('mongoose')
 const ticket = require('./model/modelTicket')
-const schema = require('./model/modelLike')
 const register = require('./model/model')
 mongoose.Promise = global.Promise
 Command.setDefaults({
@@ -36,37 +40,34 @@ const client = new GClient({
         join(__dirname, 'model'),
         join(__dirname, 'economia'),
         join(__dirname, 'ticket'),
-        join(__dirname, 'rpg'),
     ],
     messagePrefix: '!',
     messageSupport: true | true,
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers],
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers],
 })
 
 mongoose.connect(process.env.MONGODB)
 mongoose.connection.on('connected', () => {
     console.log('connected')
 })
-client.on('guildMemberAdd', (member) => {
-    member.send('123')
-})
+
 
 client.on('interactionCreate', async (interaction) => {
     function deleteChannel() {
         interaction.channel.delete()
     }
-    if (interaction.isButton()) {
+    if (interaction.isButton()) {   
         if (interaction.customId === 'abrir') {
             const nome_do_canal = `🌀 -${interaction.user.username}`
             const canal = interaction.guild.channels.cache.find((c) => c.name == nome_do_canal)
             const data = await ticket.findOne({ UserID: interaction.user.id })
             if (data) {
-                return interaction.reply({ content: `Parece que você já tem um ticket aberto!` })
+                return interaction.reply({ content: `Parece que você já tem um ticket aberto!`   })
             } else {
                 ticket.create({ UserID: interaction.user.id, TicketName: nome_do_canal }, (error, data) => {})
                 let categoria = interaction.channel.parent
                 if (!categoria) return null
-                interaction.guild.channels
+                interaction.guild.channels  
                     .create({
                         name: `${nome_do_canal}`,
                         type: ChannelType.GuildText,
@@ -106,5 +107,9 @@ client.on('interactionCreate', async (interaction) => {
     }
 })
 
+
+
+        
+module.exports = client
 
 client.login(process.env.DISCORD_TOKEN)

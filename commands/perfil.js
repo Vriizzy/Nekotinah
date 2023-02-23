@@ -3,8 +3,7 @@ const cooldown = new Set()
 const { CommandType, ArgumentType, Command, Argument } = require('gcommands')
 const { EmbedBuilder, Events, ActionRowBuilder, ButtonStyle, ButtonBuilder, ComponentType } = require('discord.js')
 const schema = require('../model/model')
-const like = require('../model/modelLike')
-
+const client = require('../index')
 new Command({
     name: 'perfil',
     description: 'a',
@@ -23,78 +22,81 @@ new Command({
         //     required: false,
         // }),
     ],
-    run: (ctx, message) => {
-        const user = ctx.arguments.getUser('usuario')
-        const data2 = like.findOne({ UserID: ctx.user.id })
+    run: async (ctx, message) => {
+        const user = ctx.arguments.getUser('usuario') || ctx.user
         const nick = ctx.arguments.getString('nickname')
+        const data = await schema.findOne({ UserID: user.id })
+
         schema.findOne({ UserID: user.id }, (error, data) => {
             const row = new ActionRowBuilder().addComponents(
-                new ButtonBuilder().setCustomId('like').setLabel('❤️').setStyle(ButtonStyle.Danger),
-                new ButtonBuilder().setCustomId('seguir').setLabel('🔰').setStyle(ButtonStyle.Primary)
+                new ButtonBuilder().setCustomId('like').setLabel('❤️').setStyle(ButtonStyle.Danger).setDisabled(),
+                new ButtonBuilder().setCustomId('seguir').setLabel('🔰').setStyle(ButtonStyle.Primary).setDisabled(),
+               
             )
+
             if (!data) {
                 return ctx.reply('Vc não está registrado')
             } else {
-                const embed =
-                    new EmbedBuilder()
-
-                        .setTitle('✅  | Usuário encontrado!')
-                        .setColor('Random')
-                        .addFields([
-                            {
-                                name: '🚧 | Nick in game',
-                                value: `${data.Nickname}`,
-                                inline: false,
-                            },
-                            {
-                                name: ' 🔰 | Discord do usuário',
-                                value: `<@${data.UserID}>`,
-                                inline: false,
-                            },
-                            {
-                                name: '🏷️  | Bio',
-                                value: data.Bio || 'Não possui',
-                            },
-                            {
-                                name: '💱  | Nekot coins',
-                                value: data.Dinheiro + ' N$',
-                            },
-                            {
-                                name: 'likes no perfil',
-                                value: data2.Like || '0',
-                            },
-                        ])
-                        .setImage(data.Banner) || 'não possui'.setThumbnail(`https://mc-heads.net/combo/${data.Nickname}`)
-                return ctx.reply({ embeds: [embed], components: [row] }).then((m) => {
-                    const collector = m.createMessageComponentCollector({ componentType: ComponentType.Button, time: 15000 })
-
-                    collector.on('collect', async (i) => {
-                        if (i.isButton()) {
-                            if (i.customId === 'like') {
-                                const data = await schema.findOne({ UserID: ctx.user.id })
-                                if (!data) {
-                                    return i.reply('Se registre')
-                                } else {
-                                    data2.findOne({ PerfilCurtido: user.id }, (error, data) => {
-                                        if (data) {
-                                            return i.reply('a')
-                                        } else {
-                                            like.create({ PessoaQueCurtiu: i.user.id, PerfilCurtido: user.id, Like: 1 }, (error, data) => {
-                                                if (data) {
-                                                    data.PerfilCurtido = user.id
-                                                    data.Like = data.Like + 1
-                                                    data.save();
-                                                    i.reply('curtido2')
-                                                }
-                                                i.reply('curtido')
-                                            })
-                                        }
-                                    })
+                fetch(`https://mush.com.br/api/player/${data.Nickname}`)
+                    .then((response) => response.json())
+                    .then((json) => {
+                        const embed =
+                            new EmbedBuilder()
+                                .setThumbnail(`https://mc-heads.net/combo/${data.Nickname}.png`)
+                                .setTitle('✅  | Usuário encontrado!')
+                                .setColor(`${json.response.rank.color}`)
+                                .addFields([
+                                    {
+                                        name: '🚧 | Nick in game',
+                                        value: `${data.Nickname}`,
+                                        inline: false,
+                                    },
+                                    {
+                                        name: ' 🔰 | Discord do usuário',
+                                        value: `<@${data.UserID}>`,
+                                        inline: false,
+                                    },
+                                    {
+                                        name: '🏷️  | Bio',
+                                        value: data.Bio || 'Não possui',
+                                    },
+                                    {
+                                        name: '💱  | Nekot coins',
+                                        value: data.Dinheiro + ' N$',
+                                    },
+                                    {
+                                        name: '💄 | Like no perfil',
+                                        value: `${data.Like}`,
+                                    },
+                                    {
+                                        name: '🌌 | Vip',
+                                        value: json.response.rank.title || json.response.account.type,
+                                    },
+                                    {
+                                        name: ' ⭐ | Level BW',
+                                        value: `${json.response.stats.bedwars.level}`,
+                                    },
+                                ])
+                                .setImage(data.Banner) || 'não possui'
+                        return ctx.reply({ embeds: [embed], components: [row] }).then((m) => {
+                            client.on('interactionCreate', (i) => {
+                                if (i.isButton()) {
+                                    if (i.customId === 'like') {
+                                        schema.find({ PessoaQueCurtiu: ctx.user.id }, (error, data) => {
+                                            if (user.id === PessoaQueCurtiu) {
+                                                return i.reply('você já curtiu esse perfil')
+                                            } else {
+                                                data.PessoaQueCurtiu = `${user.id}`
+                                                data.Like = data.Like + 1
+                                                data.save()
+                                                i.reply('você curtiu esse perfil')
+                                            }
+                                        })
+                                    }
                                 }
-                            }
-                        }
+                            })
+                        })
                     })
-                })
             }
         })
     },

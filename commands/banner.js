@@ -17,7 +17,7 @@ new Command({
               const data = await schema.findOne({ UserID: ctx.user.id})
               data.Banner = banner
               data.save();
-              return ctx.reply('aaa')
+              return ctx.reply('Foi definido uma imagem com sucesso')
 
     },
 })

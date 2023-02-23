@@ -1,5 +1,5 @@
 const { Command, CommandType, Argument, ArgumentType } = require('gcommands')
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js')
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
 require('dotenv').config()
 new Command({
     name: 'tempo',
@@ -19,15 +19,15 @@ new Command({
         const consulta = fetch(`https://api.openweathermap.org/data/2.5/weather?q=${input}&lang=pt_br&units=metric&appid=${api_key}`)
             .then((response) => response.json())
             .then((tempo) => {
-                const clima = `${tempo.weather[0].description}`
                 if (tempo?.cod && tempo.cod === '404') {
                     return ctx.reply('Local não encontrado!')
                 }
-                 const row = new ActionRowBuilder().addComponents(
-                     new ButtonBuilder().setCustomId('F').setLabel('🌡️Fahrenheit').setStyle(ButtonStyle.Danger)
-                 )
+                  const clima = `${tempo.weather[0].description}`
+                const row = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId('F').setLabel('🌡️Fahrenheit').setStyle(ButtonStyle.Danger).setDisabled()
+                )
                 const bandeira = tempo.sys.country.toLowerCase()
-                const temperatura = `${Math.floor(tempo.main.temp)}`;
+                const temperatura = `${Math.floor(tempo.main.temp)}`
                 const temperaturaMinima = `${Math.floor(tempo.main.temp_min)}`
                 const temperaturaMaxima = `${Math.floor(tempo.main.temp_max)}`
                 const imagem = `http://openweathermap.org/img/wn/${tempo.weather[0].icon}@2x.png`
@@ -58,8 +58,10 @@ new Command({
                     )
 
                     .setThumbnail(imagem)
-                
-                return ctx.reply({ embeds: [embed], components: [row]})
+
+                return ctx.reply({ embeds: [embed], components: [row] }).then(m => { 
+                     
+                })
             })
     },
 })
