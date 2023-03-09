@@ -40,6 +40,7 @@ const client = new GClient({
         join(__dirname, 'model'),
         join(__dirname, 'economia'),
         join(__dirname, 'ticket'),
+        join(__dirname, 'shader'),
     ],
     messagePrefix: '!',
     messageSupport: true | true,

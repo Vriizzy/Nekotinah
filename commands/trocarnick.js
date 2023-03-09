@@ -15,7 +15,6 @@ new Command({
   ],
    run: async(ctx) => { 
         async function trocarNick(nickname) {
-           
             const data = await schema.findOne({UserID: ctx.user.id})
               if(!data) {return ctx.reply('Como você quer mudar de nick e nem está registrado? Se foder arrombado')}
               nickname = ctx.arguments.getString('nickname')

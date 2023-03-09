@@ -33,7 +33,7 @@ new Command({
                 const imagem = `http://openweathermap.org/img/wn/${tempo.weather[0].icon}@2x.png`
                 const embed = new EmbedBuilder()
                     .setDescription(`**:flag_${bandeira}: tempo em ${input}**`)
-                    .setColor('Random')
+                    .setColor('')
                     .addFields(
                         {
                             name: '☁️> Temperatura atual',
