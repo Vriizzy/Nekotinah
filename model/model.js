@@ -11,5 +11,8 @@ module.exports = model(
     Like: {type:Number, default:0},
     PessoaQueCurtiu: {default: 'None', type:Array},
     Dinheiro: {default: 0, type: Number},
+    Cor: {default:'#000000', type: String},
+    Categoria: {default: 'Nenhum',  type: String}
+    
   })
 )

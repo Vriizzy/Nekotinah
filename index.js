@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { GClient, Plugins, Command, Component } = require('gcommands')
+const mercadopago = require('mercadopago')
 const {
     GatewayIntentBits,
     Events,
@@ -24,7 +25,7 @@ Command.setDefaults({
     cooldown: '5s',
 })
 
-Component.setDefaults({
+Component.setDefaults({ 
     onError: (ctx, error) => {
         return ctx.reply(`Opa, encontrei um erro ${error}, aguarde um pouco...`)
     },
@@ -110,7 +111,6 @@ client.on('interactionCreate', async (interaction) => {
 
 
 
-        
 module.exports = client
 
 client.login(process.env.DISCORD_TOKEN)
