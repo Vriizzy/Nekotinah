@@ -1,4 +1,4 @@
-## como rodar o bot 
+## Como rodar a aplicação?
 1. `npm install` para instalar todas as dependencias do projeto
 2.  copie o arquivo `.env.exemple` para `.env` e preencha as credenciais
 3.  npm run nodemon
